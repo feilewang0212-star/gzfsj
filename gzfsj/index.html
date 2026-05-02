@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>工资粉碎机 — 算算这笔消费碎了多少工资</title>
+    <meta name="description" content="输入你的消费金额，看看你的工资被粉碎了多少">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://your-domain.vercel.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="工资粉碎机 — 算算这笔消费碎了多少工资">
+    <meta property="og:description" content="输入消费金额，看看等于加班多久。你的心碎程度超越了___%的打工人">
+    <meta property="og:image" content="https://your-domain.vercel.app/og-image.png">
+    <meta property="og:url" content="https://your-domain.vercel.app/">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="工资粉碎机 — 算算这笔消费碎了多少工资">
+    <meta name="twitter:description" content="输入消费金额，看看等于加班多久。你的心碎程度超越了___%的打工人">
+    <meta name="twitter:image" content="https://your-domain.vercel.app/og-image.png">
+
+    <!-- Apple Mobile Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="工资粉碎机">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0c0c14">
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif; background:#0c0c14; color:#e8e8e8; min-height:100vh; overflow-x:hidden; }
+        .bg-aurora { position:fixed; top:0;left:0;right:0;bottom:0; z-index:0; pointer-events:none; overflow:hidden; }
+        .bg-aurora .orb { position:absolute; border-radius:50%; filter:blur(80px); animation:drift 12s ease-in-out infinite; }
+        .bg-aurora .orb1 { width:350px;height:350px; background:rgba(99,102,241,0.12); top:-80px;left:-80px; }
+        .bg-aurora .orb2 { width:300px;height:300px; background:rgba(168,85,247,0.08); top:40%;right:-100px; animation-delay:-4s;animation-duration:15s; }
+        .bg-aurora .orb3 { width:250px;height:250px; background:rgba(59,130,246,0.08); bottom:-50px;left:30%; animation-delay:-7s;animation-duration:18s; }
+        @keyframes drift { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(20px,-20px) scale(1.05)} 50%{transform:translate(-10px,15px) scale(0.95)} 75%{transform:translate(15px,10px) scale(1.02)} }
+        .container { position:relative; z-index:1; max-width:420px; margin:0 auto; padding:36px 20px 30px; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Header */
+        .header { text-align:center; margin-bottom:32px; }
+        .header .logo { width:52px;height:52px; margin:0 auto 12px; background:linear-gradient(135deg,#6366f1,#a855f7,#3b82f6); border-radius:15px; display:flex;align-items:center;justify-content:center; font-size:24px; box-shadow:0 8px 24px rgba(99,102,241,0.25); }
+        .header h1 { font-size:24px; font-weight:800; color:#f0f0f0; margin-bottom:5px; letter-spacing:1px; }
+        .header p { font-size:13px; color:rgba(255,255,255,0.4); letter-spacing:0.5px; }
+
+        /* Input Section */
+        .input-section { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:24px 20px; margin-bottom:16px; backdrop-filter:blur(10px); }
+        .input-group { margin-bottom:20px; }
+        .input-group:last-child { margin-bottom:0; }
+        .input-label { display:flex; align-items:center; flex-wrap:wrap; font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:10px; font-weight:500; gap:6px; }
+        .private-tag { display:inline-flex; align-items:center; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); border-radius:6px; padding:2px 8px; font-size:10px; color:#a5b4fc; }
+        .input-wrapper { display:flex; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:0 16px; transition:all 0.3s; }
+        .input-wrapper:focus-within { border-color:rgba(99,102,241,0.4); box-shadow:0 0 0 3px rgba(99,102,241,0.08); }
+        .input-wrapper .prefix { font-size:18px; color:#a5b4fc; font-weight:600; margin-right:6px; }
+        .input-wrapper input { flex:1; background:none; border:none; outline:none; color:#fff; font-size:22px; font-weight:600; padding:14px 0; width:100%; }
+        .input-wrapper input::placeholder { color:rgba(255,255,255,0.2); font-weight:400; font-size:18px; }
+        .input-wrapper .suffix { font-size:13px; color:rgba(255,255,255,0.3); margin-left:8px; }
+
+        /* Rhythm selector */
+        .rhythm-options { display:flex; gap:8px; margin-top:10px; }
+        .rhythm-btn { flex:1; padding:10px 6px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.5); font-size:12px; text-align:center; cursor:pointer; transition:all 0.2s; line-height:1.3; }
+        .rhythm-btn.active { border-color:rgba(99,102,241,0.4); background:rgba(99,102,241,0.1); color:#a5b4fc; }
+        .rhythm-btn .rhythm-title { font-weight:600; display:block; margin-bottom:2px; }
+        .rhythm-btn .rhythm-desc { font-size:10px; opacity:0.6; }
+
+        /* Quick buttons */
+        .quick-amounts { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+        .quick-btn { background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:20px; padding:6px 14px; font-size:12px; color:#a5b4fc; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+        .quick-btn:hover,.quick-btn:active { background:rgba(99,102,241,0.12); border-color:rgba(99,102,241,0.3); transform:translateY(-1px); }
+
+        /* Calculate button */
+        .calc-btn { width:100%; padding:16px; border:none; border-radius:14px; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; margin-top:8px; position:relative; overflow:hidden; letter-spacing:0.5px; }
+        .calc-btn::after { content:''; position:absolute; top:0;left:-100%;width:100%;height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent); animation:shimmer 3s infinite; }
+        @keyframes shimmer { 0%{left:-100%} 100%{left:100%} }
+        .calc-btn:active { transform:translateY(0); }
+
+        /* Result */
+        .result-section { display:none; animation:fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1); }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+        /* === SHARE CARD — minimal, one focus point === */
+        .result-card { background:linear-gradient(165deg,#141428 0%,#0c0c1a 50%,#0f1023 100%); border:1px solid rgba(99,102,241,0.12); border-radius:24px; padding:30px 22px 24px; margin-bottom:16px; position:relative; overflow:hidden; }
+        .result-card::before { content:''; position:absolute; top:-60px;right:-60px; width:200px;height:200px; background:radial-gradient(circle,rgba(99,102,241,0.12) 0%,transparent 70%); border-radius:50%; }
+        .result-card::after { content:''; position:absolute; bottom:-40px;left:-40px; width:160px;height:160px; background:radial-gradient(circle,rgba(168,85,247,0.08) 0%,transparent 70%); border-radius:50%; }
+
+        .card-inner { position:relative; z-index:1; }
+        .card-header { text-align:center; margin-bottom:8px; }
+        .card-badge { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.1)); border:1px solid rgba(99,102,241,0.2); border-radius:20px; padding:6px 14px; font-size:11px; color:#c4b5fd; margin-bottom:10px; letter-spacing:0.5px; }
+        .card-badge::before { content:'✦'; font-size:10px; }
+        .result-amount-label { font-size:12px; color:rgba(255,255,255,0.3); margin-bottom:2px; }
+        .result-amount { font-size:20px; font-weight:700; color:rgba(255,255,255,0.18); letter-spacing:6px; }
+
+        /* Big score — the ONE focus */
+        .card-score { text-align:center; margin:18px 0 8px; }
+        .card-score-number { display:flex; align-items:baseline; justify-content:center; gap:2px; }
+        .card-score-value { font-size:72px; font-weight:900; background:linear-gradient(135deg,#a5b4fc,#c084fc,#f0abfc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+        .card-score-max { font-size:20px; color:rgba(255,255,255,0.18); font-weight:400; }
+        .card-bar { margin:8px 0; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+        .card-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899); transition:width 1s cubic-bezier(0.16,1,0.3,1); width:0%; }
+
+        /* Level + Percentile */
+        .card-meta { text-align:center; margin:10px 0 14px; }
+        .pain-level-badge { display:inline-flex; align-items:center; gap:4px; padding:5px 14px; border-radius:12px; font-size:13px; font-weight:600; }
+        .level-zen { background:rgba(34,197,94,0.1); color:#4ade80; border:1px solid rgba(34,197,94,0.2); }
+        .level-mild { background:rgba(59,130,246,0.1); color:#60a5fa; border:1px solid rgba(59,130,246,0.2); }
+        .level-ouch { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+        .level-pain { background:rgba(249,115,22,0.1); color:#fb923c; border:1px solid rgba(249,115,22,0.2); }
+        .level-burn { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+        .percentile { margin-top:8px; font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:0.3px; }
+        .percentile strong { color:#c4b5fd; font-weight:700; }
+
+        /* The ONE comment */
+        .card-comment { text-align:center; padding:14px 8px; margin:6px 0 12px; font-size:15px; color:rgba(255,255,255,0.88); line-height:1.7; font-weight:500; }
+
+        /* Budget alert in card */
+        .budget-alert { display:inline-flex; align-items:center; gap:4px; padding:7px 14px; border-radius:10px; font-size:11px; font-weight:500; }
+        .budget-alert.over { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#f87171; }
+        .budget-alert.near { background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2); color:#fbbf24; }
+        .budget-line { text-align:center; margin-bottom:10px; }
+
+        /* Card footer */
+        .card-footer { display:flex; align-items:center; justify-content:center; padding-top:14px; border-top:1px solid rgba(255,255,255,0.04); gap:8px; }
+        .card-footer-logo { width:20px;height:20px; background:linear-gradient(135deg,#6366f1,#a855f7); border-radius:5px; display:flex;align-items:center;justify-content:center; font-size:10px; }
+        .card-footer-text { font-size:11px; color:rgba(255,255,255,0.25); letter-spacing:0.5px; }
+
+        /* === DETAIL SECTION — outside card, not in screenshot === */
+        .detail-section { margin-bottom:16px; }
+        .detail-block { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:16px; margin-bottom:10px; }
+        .detail-title { font-size:12px; color:rgba(255,255,255,0.35); margin-bottom:12px; letter-spacing:0.5px; }
+        .pain-item { display:flex; align-items:center; padding:9px 10px; margin-bottom:5px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; animation:itemSlide 0.5s cubic-bezier(0.16,1,0.3,1) forwards; opacity:0; }
+        @keyframes itemSlide { from{opacity:0;transform:translateX(-15px)} to{opacity:1;transform:translateX(0)} }
+        .pain-icon { font-size:16px; margin-right:8px; width:28px;height:28px; display:flex;align-items:center;justify-content:center; background:rgba(99,102,241,0.08); border-radius:7px; flex-shrink:0; }
+        .pain-text { flex:1; font-size:12px; color:rgba(255,255,255,0.5); }
+        .pain-value { font-size:17px; font-weight:700; color:#e0e7ff; margin-left:6px; }
+        .pain-unit { font-size:10px; color:rgba(255,255,255,0.3); margin-left:2px; }
+
+        .also-buy-items { display:flex; flex-direction:column; gap:6px; }
+        .also-buy-item { display:flex; align-items:center; font-size:12px; color:rgba(255,255,255,0.55); }
+        .also-buy-item .abi-icon { margin-right:8px; font-size:14px; }
+        .also-buy-item .abi-num { color:#c4b5fd; font-weight:600; margin:0 3px; }
+
+        /* Monthly projection (cold start) */
+        .month-proj { padding:12px 14px; background:rgba(168,85,247,0.05); border:1px solid rgba(168,85,247,0.1); border-radius:12px; text-align:center; font-size:12px; color:rgba(255,255,255,0.5); line-height:1.6; }
+        .month-proj strong { color:#c4b5fd; }
+
+        /* Actions */
+        .action-btns { display:flex; gap:10px; margin-bottom:12px; }
+        .action-btn { flex:1; padding:14px; border-radius:14px; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; text-align:center; border:none; }
+        .action-btn.primary { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow:0 4px 15px rgba(99,102,241,0.2); }
+        .action-btn.secondary { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); }
+        .action-btn:active { transform:scale(0.97); }
+
+        .privacy-note { display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; margin-bottom:12px; background:rgba(34,197,94,0.04); border:1px solid rgba(34,197,94,0.1); border-radius:10px; }
+        .privacy-note span { font-size:11px; color:rgba(34,197,94,0.7); }
+
+        /* Stats Banner */
+        .stats-banner { background:rgba(99,102,241,0.04); border:1px solid rgba(99,102,241,0.1); border-radius:16px; padding:16px 18px; margin-bottom:16px; display:none; }
+        .stats-banner.show { display:block; animation:fadeInUp 0.4s ease; }
+        .stats-title { font-size:12px; color:rgba(255,255,255,0.35); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+        .stats-title::before { content:'📊'; font-size:13px; }
+        .stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+        .stat-item { text-align:center; padding:8px 4px; background:rgba(255,255,255,0.02); border-radius:10px; }
+        .stat-num { font-size:20px; font-weight:700; color:#a5b4fc; line-height:1.2; }
+        .stat-label { font-size:10px; color:rgba(255,255,255,0.3); margin-top:2px; }
+        .stats-highlight { margin-top:10px; padding:8px 12px; background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.1); border-radius:10px; font-size:12px; color:rgba(255,255,255,0.5); text-align:center; line-height:1.5; }
+        .stats-highlight strong { color:#c4b5fd; font-weight:600; }
+
+        .disclaimer { text-align:center; font-size:11px; color:rgba(255,255,255,0.2); margin-top:auto; padding-top:16px; line-height:1.6; }
+        .toast { position:fixed; top:50%;left:50%; transform:translate(-50%,-50%) scale(0.8); background:rgba(20,20,40,0.95); border:1px solid rgba(99,102,241,0.2); color:#fff; padding:16px 28px; border-radius:14px; font-size:14px; opacity:0; transition:all 0.3s; z-index:999; pointer-events:none; backdrop-filter:blur(10px); }
+        .toast.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+
+        @media (max-width:380px) {
+            .container { padding:28px 16px 20px; }
+            .result-card { padding:24px 16px 20px; }
+            .card-score-value { font-size:58px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-aurora"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+    <div class="container">
+        <!-- INPUT PAGE -->
+        <div id="inputPage">
+            <div class="header">
+                <div class="logo">💸</div>
+                <h1>工资粉碎机</h1>
+                <p>每一块钱，都是你的命</p>
+            </div>
+            <div class="stats-banner" id="statsBanner">
+                <div class="stats-title">你的粉碎档案</div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-num" id="statCount">0</div><div class="stat-label">累计粉碎</div></div>
+                    <div class="stat-item"><div class="stat-num" id="statHours">0</div><div class="stat-label">累计加班(h)</div></div>
+                    <div class="stat-item"><div class="stat-num" id="statAvgScore">0</div><div class="stat-label">平均心碎</div></div>
+                </div>
+                <div class="stats-highlight" id="statsHighlight"></div>
+            </div>
+            <div class="input-section">
+                <div class="input-group">
+                    <label class="input-label">你的月薪（税后）<span class="private-tag">🔒 不会显示</span></label>
+                    <div class="input-wrapper">
+                        <span class="prefix">¥</span>
+                        <input type="number" id="salaryInput" placeholder="8000" inputmode="numeric">
+                        <span class="suffix">/ 月</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">你的工作节奏</label>
+                    <div class="rhythm-options">
+                        <div class="rhythm-btn active" data-rhythm="normal" onclick="setRhythm(this)"><span class="rhythm-title">朝九晚六</span><span class="rhythm-desc">双休 · 22天</span></div>
+                        <div class="rhythm-btn" data-rhythm="bigsmall" onclick="setRhythm(this)"><span class="rhythm-title">大小周</span><span class="rhythm-desc">26天 · 9h</span></div>
+                        <div class="rhythm-btn" data-rhythm="996" onclick="setRhythm(this)"><span class="rhythm-title">996</span><span class="rhythm-desc">26天 · 12h</span></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">这笔消费多少钱</label>
+                    <div class="input-wrapper">
+                        <span class="prefix">¥</span>
+                        <input type="number" id="spendInput" placeholder="38" inputmode="numeric">
+                    </div>
+                    <div class="quick-amounts">
+                        <span class="quick-btn" data-amount="15">早餐 ¥15</span>
+                        <span class="quick-btn" data-amount="38">咖啡 ¥38</span>
+                        <span class="quick-btn" data-amount="88">外卖 ¥88</span>
+                        <span class="quick-btn" data-amount="299">购物 ¥299</span>
+                        <span class="quick-btn" data-amount="999">数码 ¥999</span>
+                        <span class="quick-btn" data-amount="4999">大件 ¥4999</span>
+                    </div>
+                </div>
+            </div>
+            <button class="calc-btn" onclick="calculate()">看看工资碎了多少</button>
+            <div class="privacy-note"><span>🔒 所有计算在本地完成，不收集不上传任何数据</span></div>
+        </div>
+
+        <!-- RESULT PAGE -->
+        <div id="resultPage" class="result-section">
+            <!-- === SHARE CARD: only this div gets screenshotted === -->
+            <div class="result-card" id="resultCard">
+                <div class="card-inner">
+                    <div class="card-header">
+                        <div class="card-badge">工资粉碎报告</div>
+                        <div class="result-amount-label">一笔不愿透露的消费</div>
+                        <div class="result-amount">¥ · · ·</div>
+                    </div>
+                    <div class="card-score">
+                        <div class="card-score-number">
+                            <span class="card-score-value" id="painScore">0</span>
+                            <span class="card-score-max">/100</span>
+                        </div>
+                        <div class="card-bar"><div class="card-bar-fill" id="painBar"></div></div>
+                    </div>
+                    <div class="card-meta">
+                        <div id="painLevelBadge"></div>
+                        <div class="percentile" id="percentileText"></div>
+                    </div>
+                    <div class="card-comment" id="painComment"></div>
+                    <div class="budget-line" id="budgetWarning" style="display:none;"></div>
+                    <div class="card-footer">
+                        <div class="card-footer-logo">💸</div>
+                        <span class="card-footer-text">工资粉碎机 · 花钱一时爽 加班火葬场</span>
+                    </div>
+                </div>
+            </div>
+            <!-- === END SHARE CARD === -->
+
+            <!-- Detail breakdown — NOT in screenshot -->
+            <div class="detail-section">
+                <div class="detail-block">
+                    <div class="detail-title">⏰ 这笔钱等于你...</div>
+                    <div id="painItems"></div>
+                </div>
+                <div class="detail-block" id="alsoBuy" style="display:none;">
+                    <div class="detail-title">💡 这笔钱还能用来</div>
+                    <div class="also-buy-items" id="alsoBuyItems"></div>
+                </div>
+                <div class="detail-block" id="monthProj" style="display:none;">
+                    <div class="month-proj" id="monthProjText"></div>
+                </div>
+            </div>
+
+            <div class="action-btns">
+                <button class="action-btn secondary" onclick="reset()">再碎一笔</button>
+                <button class="action-btn primary" onclick="saveCard()">保存分享卡片</button>
+            </div>
+            <div class="privacy-note"><span>🔒 分享卡片不包含你的收入和消费金额，放心分享</span></div>
+        </div>
+        <div class="disclaimer">本工具仅供娱乐参考 · 不收集任何个人信息 · 不构成财务建议</div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+    /* === Config === */
+    let currentRhythm = 'normal';
+    const rhythmConfig = {
+        normal:   { days:22, hours:8,  label:'朝九晚六' },
+        bigsmall: { days:26, hours:9,  label:'大小周' },
+        '996':    { days:26, hours:12, label:'996' }
+    };
+    const HISTORY_KEY = 'ps_history';
+    const RECENT_KEY  = 'ps_recent_comments';
+
+    /* === Storage helpers === */
+    function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); } catch { return []; } }
+    function saveHistoryEntry(entry) {
+        const h = getHistory(); h.push(entry);
+        if (h.length > 200) h.splice(0, h.length - 200);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+    }
+    function getRecentComments() { try { return JSON.parse(localStorage.getItem(RECENT_KEY)||'{}'); } catch { return {}; } }
+    function saveRecentComment(level, comment) {
+        const rc = getRecentComments();
+        if (!rc[level]) rc[level] = [];
+        rc[level].push(comment);
+        if (rc[level].length > 6) rc[level].shift();
+        localStorage.setItem(RECENT_KEY, JSON.stringify(rc));
+    }
+    function pickFresh(arr, level) {
+        const recent = (getRecentComments()[level] || []);
+        const fresh = arr.filter(c => !recent.includes(c));
+        const pool = fresh.length > 0 ? fresh : arr;
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        saveRecentComment(level, chosen);
+        return chosen;
+    }
+    function getMonthSpend() {
+        const h = getHistory();
+        const ms = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+        return h.filter(e => (e.ts||0) >= ms).reduce((s,e) => s + (e.spend||0), 0);
+    }
+
+    /* === Percentile generator (based on pain score curve) === */
+    function getPercentile(ps) {
+        // Maps pain score to a "you beat X% of workers" number
+        // Low pain = low percentile (most people don't hurt), high pain = high percentile
+        if (ps <= 10) return Math.round(15 + Math.random()*10);
+        if (ps <= 25) return Math.round(30 + Math.random()*12);
+        if (ps <= 40) return Math.round(48 + Math.random()*10);
+        if (ps <= 55) return Math.round(62 + Math.random()*8);
+        if (ps <= 70) return Math.round(74 + Math.random()*8);
+        if (ps <= 85) return Math.round(85 + Math.random()*7);
+        return Math.round(93 + Math.random()*5);
+    }
+
+    /* === Init === */
+    (function init() {
+        const saved = localStorage.getItem('ps_salary');
+        if (saved) document.getElementById('salaryInput').value = saved;
+        renderStats();
+    })();
+
+    function renderStats() {
+        const h = getHistory(); if (h.length === 0) return;
+        document.getElementById('statsBanner').classList.add('show');
+        const count = h.length;
+        const totalH = h.reduce((s,e) => s + (parseFloat(e.overtimeH)||0), 0);
+        const avgS = Math.round(h.reduce((s,e) => s + (e.painScore||0), 0) / count);
+        document.getElementById('statCount').textContent = count;
+        document.getElementById('statHours').textContent = totalH.toFixed(1);
+        document.getElementById('statAvgScore').textContent = avgS;
+        const worst = h.reduce((a,b) => (b.painScore||0) > (a.painScore||0) ? b : a, h[0]);
+        const weekAgo = Date.now() - 7*86400000;
+        const wc = h.filter(e => (e.ts||0) > weekAgo).length;
+        const hl = document.getElementById('statsHighlight');
+        hl.innerHTML = wc > 0
+            ? `本周已粉碎 <strong>${wc}</strong> 笔 · 最心碎一笔 <strong>${worst.painScore}</strong>分`
+            : `历史最心碎一笔：<strong>${worst.painScore}</strong>分`;
+    }
+
+    /* === UI bindings === */
+    function setRhythm(el) {
+        document.querySelectorAll('.rhythm-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        currentRhythm = el.dataset.rhythm;
+    }
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+        btn.addEventListener('click', function() { document.getElementById('spendInput').value = this.dataset.amount; });
+    });
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keypress', e => { if(e.key==='Enter') calculate(); });
+    });
+
+    /* === Comment pools (20-22 per level) === */
+    const comments = {
+        zen: [
+            "辛苦一天了，这点犒劳你值得拥有。",
+            "放心花，这笔消费你眨两下眼的功夫就赚回来了。",
+            "生活不是只有存钱，偶尔对自己好一点。",
+            "这叫什么消费？这叫情绪稳定维护费。",
+            "你今天加的班，完全cover得住这笔开销。",
+            "你老板今天画的饼都比这个贵。放心花。",
+            "人生建议：该省省该花花。这笔属于该花的。",
+            "这笔钱的意义是：让你今天没白活。",
+            "比起你今天忍的气，这笔消费简直是做慈善。",
+            "你们公司的打印纸成本都比这贵，放心吧。",
+            "这点钱还不够你老板一顿下午茶的零头。",
+            "你的时薪完全承受得起这种快乐，花吧。",
+            "该花的钱不花，省下来的是钱，失去的是灵魂。",
+            "这不是消费，这是你给自己发的绩效奖金。",
+            "就这？你开一次晨会赚回来的都不止这些。",
+            "放心，你今天的工作量早就把这笔钱赚回来了。",
+            "这是你应得的。不需要解释，不需要理由。",
+            "人生苦短，这种级别的花销根本不值得犹豫。",
+            "与其纠结这点钱，不如纠结明天中午吃什么。",
+            "别想了，你值得。况且也就一顿饭钱。"
+        ],
+        mild: [
+            "花是能花，但今天的外卖预算可能要换成食堂了。",
+            "你的钱包微微一颤，但决定原谅你这一次。",
+            "不至于心疼，但你的余额已向你投来关切的目光。",
+            "午餐预算自动降级：外卖→食堂→自带饭。请确认。",
+            "还好，只需要多开一个无效会议就赚回来了。",
+            "你的花呗刚翻了个白眼，但还没有拉黑你。",
+            "好消息：你还买得起。坏消息：你越来越「刚好」买得起了。",
+            "这笔消费不会让你变穷，但「随便花花」额度又少了一点。",
+            "钱包：我还撑得住。但你能不能别这么频繁地测试我？",
+            "下次点咖啡记得说不加奶不加糖——加钱的那种。",
+            "你离「月光」还有安全距离，但距离正在肉眼可见地缩短。",
+            "顶多就是这周的水果预算被你拿去交公粮了。",
+            "你的记账APP正在记录此刻的心情：微妙。",
+            "不严重，但建议你今天别再打开购物APP了。",
+            "这笔消费就像加班——不致命，但让人有点不舒服。",
+            "你的月底余额刚默默叹了口气，但没说什么。",
+            "放心，这只是你钱包的一次小感冒，不用住院。",
+            "这钱花得出去，就是每天的小确幸要适当打折。",
+            "你的零花钱正在进行战略性收缩，请知悉。",
+            "不疼，就是你的余额在提醒你：悠着点。"
+        ],
+        ouch: [
+            "接下来三天餐标建议：早餐白粥，午餐食堂，晚餐创意泡面。",
+            "你的老板正在为你接下来几天的拼命表现感到欣慰。",
+            "好消息：你减肥计划的最大动力，刚刚自己出现了。",
+            "这笔钱花出去，你正式进入了「月底生存模式」。",
+            "建议接下来一周把奶茶瘾改成白开水瘾。",
+            "恭喜解锁成就：「本月已无余粮」。",
+            "你的购物车里其他东西刚被这笔消费判了死刑。",
+            "从现在起到发工资，你和「想吃什么吃什么」正式分手了。",
+            "你的储蓄计划看了一眼这笔消费，默默把自己删除了。",
+            "接下来的社交活动建议：在家躺着就好，省钱又省心。",
+            "你刚才的点击，触发了余额的「SOS紧急警报」。",
+            "你的存款做了个噩梦，梦到了这笔消费。哦等等，不是梦。",
+            "温馨提示：发工资还有十几天。你确定能撑住？",
+            "你的室友/伴侣如果知道这笔消费，你需要一份说辞。",
+            "今天开始，请把「下次再说」改为口头禅。",
+            "你的信用卡正在犹豫要不要把你拉进黑名单。",
+            "接下来通勤建议：能走就别坐车，每一步都是在赚钱。",
+            "从现在到月底，你和每一个「凑单满减」都没关系了。",
+            "这笔钱花出去的瞬间，你的理财计划自动暂停了。",
+            "你的钱包刚发了一条朋友圈：「有些伤害无法挽回」。",
+            "这笔消费已成功入选你「本月最后悔榜单」候选名单。"
+        ],
+        pain: [
+            "恭喜你，今天白上班了。明天继续为这笔消费打工吧。",
+            "你的钱包正在写遗书，主题是《主人为何如此残忍》。",
+            "建议你现在打开招聘APP看看兼职——不是建议，是急救。",
+            "这笔钱花出去，你和「财务自由」又远了一个银河系。",
+            "你的存款刚经历了一场小型地震，震级：花钱5.0级。",
+            "最近三天可能要被动减肥了，钱包替你做了决定。",
+            "你和泡面之间的距离，被这笔消费拉到了负数。",
+            "花呗、白条、信用卡正在你的手机里开紧急会议。",
+            "友情提示：接下来几天路过奶茶店请自觉绕道。",
+            "你的下个月，刚才被这笔消费预支了。",
+            "你的银行卡余额和你的信心一样，都在急速下坠。",
+            "这笔钱花完，接下来每一餐都是在和生活灵魂谈判。",
+            "建议把外卖APP卸载，改为每天带饭——至少两周。",
+            "你今天不是在消费，你是在用未来的自己做担保。",
+            "如果钱包会说话，它现在说的是：「你清醒一点」。",
+            "你离「吃土」只剩一杯奶茶的距离了。",
+            "你的月度预算刚在ICU抢救，情况不乐观。",
+            "建议你现在给下个月的自己写封道歉信。",
+            "这不是花钱，这是给未来的自己埋雷。",
+            "恭喜你用一笔消费成功激活了「生存危机感」。",
+            "你今天的消费决策，配得上一次深刻的灵魂拷问。"
+        ],
+        burn: [
+            "没事，人固有一穷。你只是比计划提前了亿点点。",
+            "接下来一周食谱：早餐——白水；午餐——空气；晚餐——梦里吃席。",
+            "你的余额和你的发际线一样，正在肉眼可见地后退。",
+            "这不是消费，这是行为艺术。作品名：《我与存款的告别》",
+            "你的工资卡刚报了警，理由是「遭受主人的家庭暴力」。",
+            "建议给你的钱包买一份保险，受益人写你自己。",
+            "恭喜你勇敢地完成了一次「冲动消费天花板挑战」。",
+            "你和「有钱人」之间的距离，刚才又被拉长了一个光年。",
+            "友情建议：接下来跟朋友说「最近在控制饮食」，大家都懂。",
+            "你的存款看完这笔消费后，选择了体面离场。",
+            "你的余额举行了追悼会，到场人数：0。它已经没有朋友了。",
+            "这笔消费之后，你唯一能做的理财就是「不花钱」。",
+            "你和财务自由之间，隔了大约两百个这样的消费。",
+            "你的工资还没捂热，就已经变成了别人的利润。",
+            "如果你的存款会发朋友圈，这条会是：「此号已注销」。",
+            "建议把通勤方式从地铁改为步行——每走一步都是在赚钱。",
+            "你的钱包看到这笔消费后，已经在准备出家了。",
+            "人生建议：先活过这个月再说。这不是玩笑。",
+            "你的消费水平和收入水平之间，存在一个无法调和的矛盾。",
+            "这笔钱花得，连你的花呗都在犹豫要不要跟你断交。",
+            "恭喜达成隐藏成就：「一笔清空」。奖励：焦虑+1。",
+            "从此刻起，你进入了经济学家口中的「个人流动性危机」。"
+        ]
+    };
+
+    const overspendComments = [
+        "温馨提醒：你本月的消费已超过月薪。你现在在花下个月的钱。",
+        "恭喜你，本月已成功实现「负收入」。每一笔都在给未来挖坑。",
+        "你这个月花的比赚的多了。这不是提醒，是事实陈述。",
+        "你的月薪已经被花完了。从现在开始，每一分钱都来自「未来的你」。",
+        "本月收支表：支出 > 收入。翻译成人话：你在吃老本。",
+        "系统检测到异常：消费总额已超越工资总额。建议：冷静。",
+        "你本月的工资已经全部「阵亡」了。剩下的日子请自求多福。",
+        "你这个月花出去的钱，需要加班到下个月才能赚回来。",
+        "本月消费已超支。友情翻译：你正在预支未来还没赚到的钱。",
+        "你的本月预算已经破产了。不是夸张，是数学。",
+        "从财务角度来说，你这个月已经「倒闭」了。下个月重新开业吧。",
+        "提醒你一个事实：你这个月赚的钱已经全部花完了，现在是「赤字」状态。"
+    ];
+    const nearLimitComments = [
+        "提个醒：你本月花的钱已经快追上月薪了。剩余额度告急。",
+        "你的月薪正在被一笔一笔地「蚕食」，马上就见底了。",
+        "本月预算快用完了。接下来每一笔都会让你正式进入超支区。",
+        "你离「本月花光工资」只差临门一脚了。要不要踢？",
+        "你的工资余额已经可以用倒计时来衡量了。",
+        "按你目前的花法，这个月的工资撑不到月底。这是数学，不是诅咒。"
+    ];
+
+    const levels = {
+        zen:  { label:'毫无波澜', cls:'level-zen',  icon:'😌' },
+        mild: { label:'轻微刺痛', cls:'level-mild', icon:'🤔' },
+        ouch: { label:'有点心疼', cls:'level-ouch', icon:'😬' },
+        pain: { label:'肉疼',     cls:'level-pain', icon:'😣' },
+        burn: { label:'灵魂暴击', cls:'level-burn', icon:'🔥' }
+    };
+    function getLevel(s) { if(s<=20) return 'zen'; if(s<=40) return 'mild'; if(s<=60) return 'ouch'; if(s<=80) return 'pain'; return 'burn'; }
+
+    /* === Also-buy === */
+    function getAlsoBuy(spend) {
+        const pool = [
+            {icon:'🍜',text:'碗兰州拉面',price:18},{icon:'☕',text:'杯便利店咖啡',price:12},
+            {icon:'🚇',text:'次地铁通勤',price:5},{icon:'🧋',text:'杯奶茶',price:15},
+            {icon:'🍱',text:'份外卖',price:30},{icon:'🎬',text:'张电影票',price:45},
+            {icon:'📱',text:'个月视频会员',price:25},{icon:'💇',text:'次理发',price:40},
+            {icon:'🧺',text:'次洗衣店',price:20},{icon:'🚕',text:'公里打车',price:3},
+            {icon:'📚',text:'本平装书',price:35},{icon:'🏋️',text:'天健身日卡',price:50},
+        ];
+        const shuffled = pool.sort(()=>Math.random()-0.5);
+        const r = [];
+        for (const it of shuffled) { if(r.length>=3)break; const c=Math.floor(spend/it.price); if(c>=1&&c<=999) r.push({...it,count:c}); }
+        return r;
+    }
+
+    /* ==================== MAIN CALCULATE ==================== */
+    function calculate() {
+        const salary = parseFloat(document.getElementById('salaryInput').value);
+        const spend  = parseFloat(document.getElementById('spendInput').value);
+        if (!salary || salary<=0) { showToast('请输入月薪'); return; }
+        if (!spend  || spend<=0)  { showToast('请输入消费金额'); return; }
+        localStorage.setItem('ps_salary', salary);
+
+        const r = rhythmConfig[currentRhythm];
+        const totalMin = r.days * r.hours * 60;
+        const minRate  = salary / totalMin;
+        const costMin  = spend / minRate;
+
+        const overtimeH = (costMin/60).toFixed(1);
+        const meetings  = (costMin/45).toFixed(1);
+        const reports   = (costMin/120).toFixed(1);
+        const commutes  = (costMin/50).toFixed(1);
+        const emails    = Math.round(costMin/4);
+
+        // === Pain score with cumulative awareness ===
+        const ratio = spend / salary;
+        const monthBefore = getMonthSpend();
+        const monthAfter  = monthBefore + spend;
+        const monthRatio  = monthAfter / salary;
+
+        let ps;
+        if (ratio<=0.005) ps = Math.round(ratio/0.005*15);
+        else if (ratio<=0.02)  ps = 15+Math.round((ratio-0.005)/0.015*25);
+        else if (ratio<=0.05)  ps = 40+Math.round((ratio-0.02)/0.03*20);
+        else if (ratio<=0.15)  ps = 60+Math.round((ratio-0.05)/0.10*20);
+        else if (ratio<=0.5)   ps = 80+Math.round((ratio-0.15)/0.35*15);
+        else ps = Math.min(99, 95+Math.round((ratio-0.5)*8));
+
+        if (monthRatio >= 1.0) ps = Math.max(ps, 85+Math.min(14, Math.round((monthRatio-1)*20)));
+        else if (monthRatio >= 0.8) ps = Math.max(ps, ps + Math.round((monthRatio-0.8)*100));
+        ps = Math.max(1, Math.min(99, ps));
+
+        const lv = getLevel(ps);
+        const li = levels[lv];
+        const pct = getPercentile(ps);
+
+        // Choose comment
+        let chosenComment;
+        if (monthRatio >= 1.0) chosenComment = pickFresh(overspendComments, 'overspend');
+        else if (monthRatio >= 0.8 && Math.random()<0.5) chosenComment = pickFresh(nearLimitComments, 'nearlimit');
+        else chosenComment = pickFresh(comments[lv], lv);
+
+        // === Render CARD (minimal) ===
+        document.getElementById('painScore').textContent = ps;
+        document.getElementById('painBar').style.width = '0%';
+        document.getElementById('painLevelBadge').innerHTML = `<span class="pain-level-badge ${li.cls}">${li.icon} ${li.label}</span>`;
+        document.getElementById('percentileText').innerHTML = `你的心碎程度超越了 <strong>${pct}%</strong> 的打工人`;
+        document.getElementById('painComment').textContent = chosenComment;
+
+        // Budget warning in card
+        const bw = document.getElementById('budgetWarning');
+        if (monthRatio >= 1.0) {
+            bw.innerHTML = `<span class="budget-alert over">⚠️ 本月累计消费已超出月薪 ${Math.round((monthRatio-1)*100)}%</span>`;
+            bw.style.display = 'block';
+        } else if (monthRatio >= 0.8) {
+            bw.innerHTML = `<span class="budget-alert near">📊 本月已花掉月薪的 ${Math.round(monthRatio*100)}%</span>`;
+            bw.style.display = 'block';
+        } else { bw.style.display = 'none'; }
+
+        // === Render DETAIL (outside card) ===
+        const allItems = [
+            {icon:'⏰',text:'需要加班',value:overtimeH,unit:'小时'},
+            {icon:'🗣',text:'等于开',value:meetings,unit:'次无效会议'},
+            {icon:'📝',text:'等于写',value:reports,unit:'份周报'},
+            {icon:'🚇',text:'够你通勤',value:commutes,unit:'趟'},
+            {icon:'📧',text:'相当于回',value:emails,unit:'封邮件'},
+            {icon:'😤',text:'约等于忍老板',value:(costMin/30).toFixed(1),unit:'次'},
+            {icon:'🪑',text:'等于久坐',value:(costMin/60).toFixed(1),unit:'小时不起身'},
+        ];
+        const rest = allItems.slice(1).sort(()=>Math.random()-0.5).slice(0,3);
+        const items = [allItems[0], ...rest];
+        let html = '';
+        items.forEach((it,i) => {
+            html += `<div class="pain-item" style="animation-delay:${0.1+i*0.08}s"><span class="pain-icon">${it.icon}</span><span class="pain-text">${it.text}</span><span class="pain-value">${it.value}</span><span class="pain-unit">${it.unit}</span></div>`;
+        });
+        document.getElementById('painItems').innerHTML = html;
+
+        const ab = getAlsoBuy(spend);
+        let abH = '';
+        ab.forEach(a => { abH += `<div class="also-buy-item"><span class="abi-icon">${a.icon}</span>买<span class="abi-num">${a.count}</span>${a.text}</div>`; });
+        document.getElementById('alsoBuyItems').innerHTML = abH;
+        document.getElementById('alsoBuy').style.display = ab.length > 0 ? 'block' : 'none';
+
+        // === Monthly projection (cold start fix) ===
+        const proj = document.getElementById('monthProj');
+        const projText = document.getElementById('monthProjText');
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+        const daysPassed = now.getDate();
+        const daysLeft = daysInMonth - daysPassed;
+
+        if (monthAfter > 0) {
+            const actualPct = Math.round((monthAfter / salary) * 100);
+            // Only show projection if enough days have passed (>=3) to be meaningful
+            if (daysPassed >= 3) {
+                const dailyAvg = monthAfter / daysPassed;
+                const projectedTotal = dailyAvg * daysInMonth;
+                const projRatio = Math.min(Math.round((projectedTotal / salary) * 100), 999);
+                if (projRatio >= 100) {
+                    projText.innerHTML = `按目前花法，本月预计花掉月薪的 <strong>${projRatio}%</strong>（超支 <strong>${projRatio-100}%</strong>）· 距月底还有 <strong>${daysLeft}</strong> 天`;
+                } else if (projRatio >= 70) {
+                    projText.innerHTML = `按目前花法，本月预计花掉月薪的 <strong>${projRatio}%</strong> · 距月底还有 <strong>${daysLeft}</strong> 天`;
+                } else {
+                    projText.innerHTML = `本月已消费月薪的 <strong>${actualPct}%</strong> · 距月底还有 <strong>${daysLeft}</strong> 天`;
+                }
+            } else {
+                // Early in the month — just show actual spend ratio
+                if (actualPct >= 80) {
+                    projText.innerHTML = `才${daysPassed}号，你已经花掉了月薪的 <strong>${actualPct}%</strong>  · 距月底还有 <strong>${daysLeft}</strong> 天`;
+                } else {
+                    projText.innerHTML = `本月已消费月薪的 <strong>${actualPct}%</strong> · 距月底还有 <strong>${daysLeft}</strong> 天`;
+                }
+            }
+            proj.style.display = 'block';
+        } else { proj.style.display = 'none'; }
+
+        // Save
+        saveHistoryEntry({ ts:Date.now(), spend, painScore:ps, level:lv, overtimeH:parseFloat(overtimeH), rhythm:currentRhythm });
+
+        // Switch page
+        document.getElementById('inputPage').style.display = 'none';
+        document.getElementById('resultPage').style.display = 'block';
+        window.scrollTo({top:0,behavior:'smooth'});
+        setTimeout(() => { document.getElementById('painBar').style.width = ps+'%'; }, 100);
+    }
+
+    function reset() {
+        document.getElementById('inputPage').style.display = 'block';
+        document.getElementById('resultPage').style.display = 'none';
+        document.getElementById('spendInput').value = '';
+        document.getElementById('painBar').style.width = '0%';
+        window.scrollTo({top:0,behavior:'smooth'});
+        renderStats();
+    }
+
+    function saveCard() {
+        const card = document.getElementById('resultCard');
+        showToast('正在生成卡片...');
+        html2canvas(card, { backgroundColor:'#0c0c14', scale:2, useCORS:true, logging:false }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = '工资粉碎报告.png';
+            link.href = canvas.toDataURL('image/png');
+            if (navigator.share && navigator.canShare) {
+                canvas.toBlob(blob => {
+                    const file = new File([blob],'工资粉碎报告.png',{type:'image/png'});
+                    if (navigator.canShare({files:[file]})) {
+                        navigator.share({files:[file],title:'工资粉碎机',text:'花钱一时爽，加班火葬场...'}).catch(()=>{link.click();showToast('卡片已保存');});
+                    } else { link.click(); showToast('卡片已保存'); }
+                });
+            } else { link.click(); showToast('卡片已保存，长按可分享'); }
+        }).catch(()=>{ showToast('请直接截图保存'); });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(()=>t.classList.remove('show'), 2000);
+    }
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
